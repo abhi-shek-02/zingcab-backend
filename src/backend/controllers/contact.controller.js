@@ -1,6 +1,6 @@
 
 const { successResponse, errorResponse } = require('../utils/response');
-const supabase = require('../utils/supabase');
+const contactService = require('../services/contact.service');
 const logger = require('../utils/logger');
 
 /**
@@ -24,18 +24,10 @@ const submitContactForm = async (req, res) => {
     
     logger.info(`Processing contact form submission from ${contactData.email}`);
     
-    const { data, error } = await supabase
-      .from('contactUs')
-      .insert([contactData])
-      .select();
-    
-    if (error) {
-      logger.error(`Contact form submission error: ${error.message}`);
-      throw new Error(error.message);
-    }
+    const data = await contactService.submitContactForm(contactData);
     
     logger.info(`Contact form submitted successfully from ${contactData.email}`);
-    return successResponse(res, 201, 'Contact form submitted successfully', data[0]);
+    return successResponse(res, 201, 'Contact form submitted successfully', data);
   } catch (error) {
     logger.error(`Submit contact form error: ${error.message}`);
     return errorResponse(res, 500, 'Failed to submit contact form', [error.message]);
