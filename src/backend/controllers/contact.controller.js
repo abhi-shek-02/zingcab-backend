@@ -1,4 +1,3 @@
-
 const { successResponse, errorResponse } = require('../utils/response');
 const contactService = require('../services/contact.service');
 const logger = require('../utils/logger');
