@@ -8,7 +8,14 @@ const logger = require('../utils/logger');
  */
 const submitContactForm = async (req, res) => {
   try {
-    const contactData = req.body;
+    const contactData = {
+      name: req.body.name,
+      phoneNumber: req.body.phoneNumber,
+      email: req.body.email,
+      message: req.body.message
+    };
+    
+    logger.info(`Processing contact form submission from ${contactData.email}`);
     
     const { data, error } = await supabase
       .from('contactUs')
@@ -20,10 +27,11 @@ const submitContactForm = async (req, res) => {
       throw new Error(error.message);
     }
     
+    logger.info(`Contact form submitted successfully from ${contactData.email}`);
     return successResponse(res, 201, 'Contact form submitted successfully', data[0]);
   } catch (error) {
     logger.error(`Submit contact form error: ${error.message}`);
-    return errorResponse(res, 500, 'Failed to submit contact form');
+    return errorResponse(res, 500, 'Failed to submit contact form', [error.message]);
   }
 };
 
