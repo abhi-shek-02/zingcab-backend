@@ -11,17 +11,21 @@ if (!config.supabaseUrl || !config.supabaseKey) {
 // Initialize the Supabase client
 const supabase = createClient(config.supabaseUrl, config.supabaseKey);
 
-// Test the connection
-supabase.from('users').select('count', { count: 'exact', head: true })
-  .then(({ count, error }) => {
-    if (error) {
-      logger.error(`Supabase connection error: ${error.message}`);
-    } else {
-      logger.info(`Supabase connected successfully. Found ${count} users.`);
-    }
-  })
-  .catch(err => {
-    logger.error(`Supabase error: ${err.message}`);
-  });
+// Test the connection only in development mode to avoid excessive logs in production
+if (config.nodeEnv === 'development') {
+  supabase.from('users').select('count', { count: 'exact', head: true })
+    .then(({ count, error }) => {
+      if (error) {
+        logger.error(`Supabase connection error: ${error.message}`);
+      } else {
+        logger.info(`Supabase connected successfully. Found ${count} users.`);
+      }
+    })
+    .catch(err => {
+      logger.error(`Supabase error: ${err.message}`);
+    });
+} else {
+  logger.info('Supabase client initialized in production mode');
+}
 
 module.exports = supabase;

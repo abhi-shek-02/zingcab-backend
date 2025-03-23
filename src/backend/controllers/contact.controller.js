@@ -8,12 +8,19 @@ const logger = require('../utils/logger');
  */
 const submitContactForm = async (req, res) => {
   try {
-    const contactData = {
-      name: req.body.name,
-      phoneNumber: req.body.phoneNumber,
-      email: req.body.email,
-      message: req.body.message
-    };
+    const { name, phoneNumber, email, message } = req.body;
+    
+    // Basic validation
+    if (!name || !phoneNumber || !email || !message) {
+      return errorResponse(res, 400, 'All fields are required', ['name, phoneNumber, email, and message are required fields']);
+    }
+    
+    // Simple email validation
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return errorResponse(res, 400, 'Invalid email format');
+    }
+    
+    const contactData = { name, phoneNumber, email, message };
     
     logger.info(`Processing contact form submission from ${contactData.email}`);
     
